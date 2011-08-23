@@ -28,7 +28,7 @@
 #include "resource.h"
 
 // Kernel file name
-static char *bootKernel = "zimage";
+static char *bootKernel = "zImage";
 // Initrd file name
 static char *bootInitrd = "";
 // Kernel command line
