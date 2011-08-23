@@ -1,0 +1,85 @@
+New features:
+
+* Port commands from gnu-haret to mainline haret.  (eg, pxa register
+  dumping, wincedump, powerdev, irctl, btctl, gsmdev, testril,
+  testirsend)
+
+* Document current feature set in wiki.
+
+* Possibly sort help output by command name.
+
+* Possibly allow the current machine definition (Mach) to be
+  explicitly specified by a user command.
+
+
+Misc cleanups:
+
+* Make haret thread safe.
+
+* It might be useful to make memPhysMap_section the default and
+  implement a new memPhysMap_temp that can call the wince VirtualCopy
+  function when there is no l1 mapping available.  Many places in the
+  code assume a reference from memPhysMap has a long lifespan, and if
+  the VirtualCopy method is invoked these places may fail
+  mysteriously.
+
+* It may also be useful to implement an optional "window size"
+  parameter to memPhysMap - some code assumes it can access large
+  areas from a memPhysMap reference, and this may not be true on all
+  machines.
+
+* Possibly remove "dump" based commands and re-implement them as
+  regular commands.  It isn't clear why "dump mmu" isn't implemented
+  as "mmudump".
+
+* Remove old Microsoft based build code.
+
+* Submit nled.h, pkfuncs.h, pwindbas.h, and pwinuser.h to cegcc.
+
+  * Find out origin of gx.h - sanitize and submit to cegcc if
+    necessary.
+
+* Get "bwmem" command working or remove it.
+
+* The strncpy calls (and snprintf, etc) should be audited to ensure
+  that a null character is always at the end of the buffer.
+
+* Remove old PXA gpio watching code (wgpio)?
+
+
+Possible features for "watch" and "wi":
+
+* Haret should fixup the exception vectors if the user tries to exit
+  while in "wi".
+
+* It should be possible to implement a portable instruction breakpoint
+  system by overwriting code in memory with an interrupt or "undefined
+  instruction" code.  (It may also be possible to just jump to a
+  special handler.)  This would allow breakpoints on machines other
+  than the PXA.
+
+* The current mmutrace system catches memory accesses by invalidating
+  1MiB memory ranges.  In theory, this could be reduced to 1KiB memory
+  ranges.  Reducing the memory range may reduce the number
+  instructions haret has to emulate.
+
+* Possibly add the ability for watch lists to be conditional on values
+  previously read.  (For example, a gpio level register might only be
+  valid if the gpio direction is set to input.)
+
+* It would be nice if one could "watch" multiple lists
+  simultaneously.  For example: "watch gpios clocks 10"
+
+
+Possible features for Linux booting:
+
+* Verify linux booting from resume code.
+
+* Possibly allow PHYSOFFSET_KERNEL (et al.) to be set via commands.
+
+* Possibly allow the ability to launch an arbitrary binary (by
+  disabling tag generation, specifying a destination address, and a
+  jump-to address).  This may be useful for testing new boot loaders.
+
+* Possibly support larger font sizes.  (Some machines have high-res
+  displays which make the current fonts hard to read.)

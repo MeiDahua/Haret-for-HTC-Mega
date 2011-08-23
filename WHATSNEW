@@ -1,0 +1,465 @@
+next version <kevin@koconnor.net>, Holger Schurig, Vasily Khoruzhick, Martijn Stolk, Tanguy Pruvot, cr2
+
+  * Added TAGS_OFFSET, KERNEL_OFFSET and INITRD_OFFSET variables to
+    allow tweaking the various offsets. Default values mimic the
+    existing behaviour.
+
+  * Add new script tools/extract-bootbundle.py that can extract the
+    haret/kernel/initrd/script parts of a boot bundle.
+
+  * Add support for "iMX" processors
+
+  * Simplify lsmod output
+
+  * Add generic support for ARM v7 cores
+
+  * Add detection for implementor Qualcomm
+
+  * Add generic support for QSD8xxx
+
+  * Add support for the HTC Leo, HTC Topaz, HTC Rhodium, HP Jornada 900,
+    Medion GoPal E4430, Acer neoTouch S200 F1, HTC Panther (Palm Treo Pro),
+    HTC HD Mini
+
+  * New commands: SETBIT[P|V], DUMP MSMCLKKHZ (msm/qsd only), PATCHFUNC
+
+  * Add Samsung S3C64x0 support and gpio function set (tested on Acer M900 device)
+
+  * PLAYSOUND now accepts a filename parameter
+
+20080928 0.5.2 <kevin@koconnor.net>, <ipaqlinux@oliford.co.uk>, <pmiscml@gmail.com>
+
+  * Add support for "Centrality" arm cpus.
+
+  * Better support for MSM7xxx and MSM7xxxA machines.
+
+  * Support arm6 MMU extensions.  The arm6 mmu no longer supports 1K
+    "tiny" pages.  It also adds several new page flags.
+
+  * Scan for all 1Meg mappings suitable for virtToPhys translation at
+    haret startup.
+
+  * Check that haret is running in "system" mode at startup - warn if
+    not.
+
+  * Enhance "mmutrace" to support "stm", "ldm", and "swp"
+    instructions.
+
+  * Add new "mmumerge" feature to "wirq".  The "mmumerge" tool allows
+    one to detect if wince is changing the mmu mappings during a
+    "wirq" session.
+
+  * The high frequency polling system (the "TRACES" variable) will now
+    also report the approximate PC location.  This can help find what
+    code is changing memory when "mmutrace" isn't available.
+
+  * Support "wirq" even on older machines that don't have
+    "allocPhysMem".
+
+  * Support GETGXINFO method of finding the video frame buffer.
+
+  * Only dynamically bind to NLedSetDevice().  This fixes startup
+    problems on some wince devices that don't have this function.
+
+20071224 0.5.1 <kevin@koconnor.net>, <pmiscml@gmail.com>
+
+  * The "dump mmu" command now takes an optional physical address
+    range.  When this range is specified, only virtual addresses that
+    map to the specified physical address range is shown.  For
+    example:
+       dump mmu 2 0x10000000 1024*1024
+
+  * The ibit and wbit commands can now take a bit range.  For example:
+       ibit gpios 58..90
+
+  * Initial support for detecting MSM7500 and OMAP15xx cpus.
+
+  * Fix several ommisions with HTC Universal support.
+
+  * Basic support for decoding register names on MMUTRACE events in
+    haretconsole.
+
+  * New command "ALLOCTEST" - allocates memory and then frees it.  It
+    is useful to see where wince places user memory requests.
+
+  * New variable "VIRTVRAM" - it stores the virtual address of the
+    video ram reported by wince.
+
+  * Haret is no longer compiled with cegcc exceptions or rtti.  This
+    shrinks the binary by about 40K.
+
+20070915 0.5.0 <kevin@koconnor.net>, <pmiscml@gmail.com>
+
+  * It is now possible to detect processors by inspecting the wince
+    processor information.  (SC32442 and OMAP850 checks added.)
+
+  * New command "newvar" that enhances memory watching.  It is now
+    possible to dynamically create new lists - for example:
+        newvar CLOCKS GPIOS 'Architecture clock registers'
+        addlist CLOCKS p2v(0x41300000)
+    will allow one to be able to later run "watch clocks".
+
+  * New command "joinlist" - this allows one to append multiple watch
+    lists into a single list.  For example:
+        joinlist mylist gpios clocks
+
+  * Enhanced "mmutrace" capabilities - it is now possible to ignore
+    accesses based on the value read/written.  For example:
+        addlist mmutrace p2v(0x56000024) 4 rw 0xffffe7ff
+    will watch the address but only report when bits 11/12 change.
+
+  * Improved OMAP850 support.  The commands "watch GPIOS" and "wirq"
+    should work by default.  Also, the omap850 is now properly
+    recognized with an arm926 cpu core and cache flushing works
+    correctly.
+
+  * Reads and writes to invalid memory should now be caught in haret.
+    This used to work in haret v0.3.8 and earlier (when haret was
+    compiled with the MS compiler), but broke in cegcc versions.
+    Support for catching access violations is now available with the
+    cegcc compiler.
+
+  * One can now watch the CPSR and SPSR registers via the standard
+    watch methods.  For example:
+      addlist resumetraces cpsr
+
+  * The variable INITRD no longer defaults to "initrd".  In order to
+    use an initrd, one must use: set initrd "xxx".  If an initrd is
+    specified, it must be present or the boot will fail.  (This change
+    was made because previously one could erroneously set an initrd to
+    a non-existent file and haret would not complain.)
+
+  * RAMADDR no longer defaults to 0xa0000000 on unknown hardware.
+    (The devices that use that address are easy to detect, and it
+    causes confusing error messages on other devices.)
+
+  * PXA irq watching has been modified so that it conforms with other
+    platforms.  This is a user visible change: to ignore interrupts
+    use "IBIT IRQS x" instead of "SET II(x) 1" (x may not be the
+    same).  The new output will only make sense if one is using the
+    haretconsole script.
+
+  * Improve memory detection on wince 5 (and later) devices.  It
+    should no longer be necessary to set RAMSIZE for most devices.
+
+  * New command: LOADFUNC
+
+  * Haret now runs on wince 2.11 devices.  (Fixed issue which caused
+    command dispatch to not work.)
+
+  * == and != operators added (Example: 'if 1 == 1 print "sure"').
+
+  * New command: MSGBOX, display message with the given title, text,
+    icon and button, waits for user to click button, stores return
+    code in variable RESULT.
+
+  * New allocation method (CreateFileMapping), able to handle 20Mb+
+    initrd's.
+
+  * Better handling of overlapped memory regions during allocation.
+
+  * New command: EXIT, terminate HaRET unconditionally. (QUIT just
+    closes network session.)
+
+  * BootBundle (former 'linload') support reimplemented, it's now much
+    more scalable and can handle big initrd's (up to ~22Mb was
+    tested).  The functionality is now builtin to standard haret
+    executable, and bundle is created by just concatenating haret.exe,
+    zImage, initrd a script, and a special trailer (and haret on
+    startup check if this trailer exists to decide if this is
+    BootBundle or normal executable).  There's a
+    tools/make-bootbundle.py utility which does all the work.
+
+20070606 0.4.8 <kevin@koconnor.net>
+
+  * New commands: ATIDBG, ADDR2MOD, PLAYSOUND, SETLCD
+
+  * New support for tracing memory (or coprocessors) during a wince
+    resume.  This can be done with something like:
+      addlist resumetraces cp 15 0 1 0 0
+
+  * Support for watching coprocessor registers in addition to memory
+    locations.  This can be used with something like:
+      addlist gpios cp 15 0 2 0 0
+
+  * New syntax for watching memory areas.  The addwatch (and
+    addirqwatch / addtracewatch) command is now "addlist GPIOS ..."
+    (and "addlist IRQS ..." / "addlist TRACES ...").  The lswatch
+    command is now "showvar <var>", the ignorewatch/unignorewatch
+    commands are now "ibit <var>" and "wbit <var>".  Finally, the
+    "clearwatch" command becomes "clearvar <var>".  Internally, the
+    code now uses variables for the various watchlists, which will
+    make it easier to add new watchlists in the future.
+
+  * New support for memory tracing based on MMU manipulation.  This
+    allows one to watch reads/writes to memory on any ARM platform.
+    To use this infrastructure, run "addlist mmutrace <start> <size>
+    <rw>".  Where <start> is address to trace, <size> is the size of
+    the address range to trace, and <rw> is a string that determines
+    whether or not to check for reads or writes.  Use addlist,
+    clearvar, and showvar to manipulate the list of address ranges to
+    watch.
+
+  * New support in haretconsole for showing architecture register
+    names during the "watch" and "wi" commands.
+
+  * New command "evalf".  One can use this to build commands
+    dynamically - for example:
+      evalf "runscript startup-%s.txt" MACHNAME
+
+  * Status messages can now be written directly to the frame buffer
+    during the linux boot (when fbduringboot is enabled).
+
+  * New machine list file (src/mach/machlist.txt) allows one to easily
+    define simple machine types.  (More complicated machines can still
+    use the existing infrastructure.)
+
+  * Several new machines were added.
+
+20070116 0.4.7 <kevin@koconnor.net>, <pmiscml@gmail.com>
+
+  * Add new machines: rx3715, Axim X50
+
+  * New variable: FBDURINGBOOT
+
+  * DUMP no longer takes a filename parameter.  Use the REDIR command
+    instead.  (For example, "DUMP GPIO out.txt" is now "REDIR out.txt
+    DUMP GPIO".)
+
+  * Implement new command: IF
+
+  * Implement new variable MACHMTYPE (contains the auto detected
+    mtype).
+
+20070103 0.4.6 <kevin@koconnor.net>, <pmiscml@gmail.com>
+
+  * New commands: RUNSCRIPT, BG, REDIR
+
+  * The linload build support has been modified to support linking in
+    a haret script.  The last line in the script should run the new
+    "RAMBOOT" command.  An example build would look something like:
+
+    make linload SCRIPT=myharet.txt KERNEL=zImage INITRD=abc
+
+  * Add new machines: hermes, wizard, g500, artemis
+
+  * Add mechanism to check for DMA corruption during kernel load by
+    CRCing the kernel before and after the preloader relocates it.  To
+    enable, send the command "set kernelcrc 1" before booting.
+
+  * Check that boot FB feedback wouldn't overwrite kernel/initrd
+    memory. Disable it if does. This fixes booting on h3900, h4000, etc.
+
+  * Added detection of h3900, h2200.
+
+20061205 0.4.5 <kevin@koconnor.net>
+
+  * Support memory polling commands (WATCH/ADDWATCH).  This will allow
+    one to poll an area of memory and check for changes.  The "wi"
+    command has also been extended to support memory polling during
+    interrupt and trace/breakpoint events (see ADDIRQWATCH /
+    ADDTRACEWATCH).
+
+  * Support multiple simultaneous network connections to haret.  This
+    can be invoked by calling the new "network <port>" haret command.
+    Having multiple telnet windows can be useful when using haret to
+    invoke a wince action while simultaneously tracing the results.
+    Warning - most of haret is not thread-safe, so care should be
+    taken to not run intricate commands simultaneously.
+
+  * Add new machine: jornada820
+
+  * Add new commands: LOG, UNLOG, PS, KILL, LOADLIBRARYEX, NLEDSET,
+    LSMOD, POWERMON
+
+  * Removed support for command-line options "-r" and "-k".  These
+    options are superseded by the linload.exe program and the command
+    "KILL".  This was done, in part, because the "-k" option required
+    toolhelp.dll which may not be present on old PDAs.
+
+20061118 0.4.4 <kevin@koconnor.net>
+
+  * Add ability to bind haret, kernel, and initrd into a single exe.
+    This is done by running:
+
+    make linload CMDLINE="xx" KERNEL=zImage INITRD=abc
+
+    A file out/linload.exe will be created.  Running this on a pda
+    will launch the specified kernel.  This feature may be useful for
+    building linux installation kits in an easy to run application.
+
+  * New linux bootloading code.  This new code now does most of the
+    actions from C code.  This allows more diagnostic utilities (eg,
+    now lines are written to the framebuffer from the preloader).
+    Note that the penguin logo was disabled in this release.  (A
+    simple progress bar was added in its place.)
+
+  * Reenabled support for detection of framebuffer via gx.dll calls
+    (eg, GXOpenDisplay).  This is done via the late library loading
+    code.
+
+20061115 0.4.3 <kevin@koconnor.net>
+
+  * Add pxa specific interrupt watching code.  This allows one to
+    trace interrupts, trace memory access, and set instruction
+    breakpoints.  This command is only available when haret is run on
+    a pxa processor.
+
+  * Add the ability to bind functions to dlls at runtime instead of at
+    compile time.  This allows the code to run on older OSs, while
+    still offering advanced functionality on newer pdas.  This is
+    available via the LOAD_LATE macro in lateload.h.
+
+  * Add support for enabling/disabling commands and variables at
+    startup.  This is useful to disable commands that aren't
+    applicable to a certain platform.
+
+20061112 0.4.2 <kevin@koconnor.net>
+
+  * Implement command registration capability.  Now it is possible to
+    register a new command by using the REG_CMD macro found in
+    script.h.  This means script.cpp shouldn't need to be modified as
+    new commands are added.
+
+  * Change Output to take a "char *" instead of "wchar_t *" for the
+    format.  Enable gcc's printf style warning checks.
+
+  * Move functionality of Log to new function Screen and implement it
+    with same code as Output.
+
+20061112 0.4.1 <kevin@koconnor.net>
+
+  * Add "haretconsole" host based scripts.
+
+  * Implement new Machine class to handle per-machine options.  Add
+    support for auto-detecting the current machine type.
+
+  * Import mach-types.h and pxa-regs.h from latest linux sources.
+    Update code to use linux defs instead of local defines.
+
+  * Add macro support for defining coprocessor accessor functions.
+
+  * When mapping a physical address, scan for wince 1Meg section
+    mapping that already exists.  This reduces the calls to
+    VirtualAlloc and makes HaRET much more stable.  (For example, now
+    "dump mmu" works reliably.)
+
+  * Fix all compile warnings.
+
+20061111 0.4.0 <kevin@koconnor.net>
+
+  * Add the ability to log "Output()" messages to a disk file when a
+    file "earlyharetlog.txt" exists in the same directory as the haret
+    executable.  In addition, a bunch of startup Output() logs were
+    added.  This feature is useful for diagnosing crashes at program
+    startup.
+
+  * Update code so that haret compiles with cegcc.  This involves a
+    few minor code changes to the C++ code and some file renames.  The
+    assembler syntax was also updated to work with gas.  Two
+    existing features were disabled - gx based framebuffer detection
+    and the BWMEM command - both were causing compile problems.
+
+20061027 0.3.8 Paul Sokolovsky <pmiscml@gmail.com>
+
+  * Support for big kernels (up to 5Mb of uncompressed size, zImage
+    sizes up to at least 1.5Mb are ok).
+  * Fix regression of QVGA bootlogo display, introduced in 0.3.7.
+
+02-May-2006 v0.3.7, <ynezz@hysteria.sk>
+    -*- Updated main dialog to WM GUI behavior
+    -*- Replaced code for getting framebuffer pointer
+    -*- Added possibility to init COM1 port settings
+    -*- Added two commandline options -r(run) and -k(kill)
+        run - don't do any gui stuff, just init and boot. This option shorten
+        development cycle a lot, so you can do "synce-prun haret -r" as soon as 
+        you have ActiveSync connection
+        kill - just kills 'welcome.exe' process (LCD calibration) before haret 
+        dialog startup, in case you won't calibrate LCD but need haret GUI
+    -*- Added support for VGA booting penguin bitmaps
+    -*- Added Visual Studio 2k5 project file
+    -*- Replaced GAPI calls with display device escapes - this removes the
+        GX.dll dependency. Hurray for this!
+
+22-Apr-2005 v0.3.6
+    -*- Reimplemented the patch from 01-Dec-2004 since it was lost (!?).
+    -*- Added CPU autodetect routines, S3C24xx detection is currently not
+        implemented although quite easy to implement.
+    -*- Added the "CPU" readonly variable which contains the autodetected
+        CPU family. Removed the CPUType variable since CPU detection should
+        work quite reliably, so there's no need to override this manually.
+
+11-Apr-2005
+    -*- updates for separate UART drivers
+    -*- s3c24xx uart driver additions
+    -*- settable cpu-type
+
+06-Apr-2005 <unreleased>
+    -*- Detect ARM920 and use correct cache-flush
+    -*- avoid some of the cache flushing in the cpu get CR functions
+
+01-Dec-2004 v0.3.5
+    -*- Rewrote the cpuGetCP() and cpuGetCP() routines so that they don't use
+        self-modifying code. This fixes a number of hangs experienced on different
+        platforms in different circumstances.
+
+27-Feb-2004 v0.3.4
+    -*- Stop all DMA controllers before booting Linux.
+
+31-Jan-2004 v0.3.3
+    -*- Added an dumper for the AC97 controller.
+
+10-Jan-2004 v0.3.2
+    -*- Made all dumpers generalized. The list of dumpers is available by
+        typing 'HELP DUMP'.
+    -*- Added a dumper for dumping GPIO state in a format suitable for
+        generating include/asm-arm/arch-pxa/xxx-init.h files.
+    -*- Enhanced memory size detection. Alas, Windows CE does not have
+        a function that would directly return the amount of RAM in the PDA,
+        so you have to use different tricks for this.
+    -*- Renamed GPSR function to GPLR since it reads/sets the GPIO Level
+        Register.
+    -*- Renamed WATCHGPIO to WGPIO for shorter typing.
+    -*- Added the SLEEP command for waiting given number of milliseconds.
+    -*- Added the BWMEM command which will measure PDA's memory performance
+        using Larry McVoy's lmbench routines. However, since the code is
+        modified (although mostly cosmetically) from the original, the
+        numbers should NOT be published as the results of lmbench, but
+        rather as results of HaRET.
+    -*- Fixed a bug that prevented you from assigning string variables longer
+        than 100 characters (they were truncated to this length). I've found
+        this while using a very long 'cmdline' variable.
+
+15-Nov-2003 v0.3.1
+    -*- I've realised that HRET is quite hardly to pronounce for
+        English-speaking people, so I've renamed the program to HaRET.
+    -*- Added a generalised mechanism for adding new functions. They are
+        displayed along with variables now (SET LIST has been replved
+        with HELP VARS). To get the value of a function, you do it like
+        in normal high-level languages, e.g. 'PRINT "%x" VMW(0xa0000000)'
+        or 'set CP(15,2) 0xa0010000'.
+    -*- Added three functions: GPSR, GPDR, GAFR which allow reading/writing
+        to GPIO control registers.
+    -*- Added DUMPGPIO command which displays in a readable format the state
+        of the entire GPIO machinery.
+
+14-Nov-2003 v0.3.0
+    -*- Added variables (SET command). Added the Linux kernel boot
+        funcionality. Added a nice penguin shown during kernel loading :)
+    -*- Added a lot of new commands (PP[B|H|W/VP[B|H|W], WATCHGPIO,
+        [V|P]WF and a lot more). Added functions (GPIO(), CP() etc).
+
+16-Oct-2003 v0.2.1
+    -*- The first release meant to be public. Added the telnetd emulation code
+        so that commands can be now nicely interactively edited. Added some
+        docs about HRET (the most useful part is the description of HRET
+        scripting language).
+
+15-Oct-2003 v0.2.0
+    -*- This is the first release of what was once linexec. I hardly believe
+        there is at least one original line left somewhere, however credits
+        goes to original linexec authors Martin Demin, James Hicks, Joshua
+        Wise (in no specific order) for things I've learned from linexec
+        and also I'm grateful to Martin Demin for bringing the first
+        Linux/Dell Axim port. I've learned lot from their code - hey,
+        it's my first WinCE (and PDA) project.

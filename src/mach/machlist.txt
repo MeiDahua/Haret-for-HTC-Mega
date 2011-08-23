@@ -1,0 +1,126 @@
+# This file allows one to auto generate a list of "machine" detection
+# classes to be built into HaRET.
+
+# The order of lines is important - it determines the order in which
+# each machine will be checked.
+
+# classname, archtype, oeminfos, machtype, [script commands...]
+PLATFORM=PocketPC
+Alpine,     PXA27x  ,PH10C;PH10D,                 HTCALPINE
+Apache,     PXA27x  ,PA10,                        HTCAPACHE, \
+        ibit IRQS 79, addlist IRQS p2v(0x0a000000) 0xff 16 0, \
+        addlist GPIOS p2v(0x0a000000) 0xff00 16, \
+        set resumeaddr 0xa0040000
+AximX50,    PXA27x  ,Dell Axim X50;Dell Axim X51, X50,       \
+        set ramaddr 0xa8000000,set ramsize 64*1024*1024
+AximX5,     PXA     ,Dell Axim X5,                AXIM
+Beetles,    PXA27x  ,hp iPAQ hw65,                HTCBEETLES, \
+        addlist GPIOS p2v(0x10000018) 0x0000 16, \
+        addlist GPIOS p2v(0x10000098) 0x0000 16, \
+        addlist GPIOS p2v(0x10000118) 0x0000 16, \
+        addlist GPIOS p2v(0x10000198) 0x0000 16
+Blueangel,  PXA     ,PH20,                        BLUEANGEL, \
+        set ramsize 128*1024*1024
+Himalaya,   PXA     ,PH10A;PH10B,                 HIMALAYA
+Magician,   PXA27x  ,PM10,                        MAGICIAN
+Universal,  PXA27x  ,PU10,                        HTCUNIVERSAL
+H1910,      PXA     ,hp iPAQ h191,                H1900
+H1940,      S3c2410 ,HP iPAQ h193;HP iPAQ h194,   H1940,    set ramsize 64*1024*1024
+RX1950,     S3c2442 ,HP iPAQ rx195,               RX1950,   set ramsize 32*1024*1024
+H2200,      PXA     ,hp iPAQ h22,                 H2200
+H3600b,     SA      ,Compaq iPAQ H3600,           H3600
+H3700,      SA      ,Compaq iPAQ H3700
+H3800,      SA      ,Compaq iPAQ H3800,           H3800
+H3900,      PXA     ,Compaq iPAQ H39,             H3900
+H4000,      PXA     ,hp iPAQ h41,                 H4000
+H4300,      PXA     ,hp iPAQ h43,                 H4300
+H5000,      PXA     ,HP iPAQ h5;hp iPAQ h5,       H5400
+H6340,      OMAP15xx,HP iPAQ h6340,               H6300,    set ramsize 64*1024*1024
+HX2000,     PXA27x  ,HP iPAQ hx2,                 HX2750,   set ramsize 64*1024*1024
+HX4700,     PXA27x  ,hp iPAQ hx47;HP iPAQ hx47,   H4700,    set ramsize 64*1024*1024
+Sable,      PXA27x  ,hp iPAQ hw69,                HW6900,   \
+	set ramsize 64*1024*1024, \
+        addlist GPIOS p2v(0x10000018) 0x0000 16, \
+        addlist GPIOS p2v(0x10000098) 0x0000 16, \
+        addlist GPIOS p2v(0x10000118) 0x0000 16, \
+        addlist GPIOS p2v(0x10000198) 0x0000 16
+Wizard,     OMAP850 ,WIZA100;WIZA200
+Hermes,     S3c2442 ,HERM100;HERM200;HERM300,     HTCHERMES, \
+        ibit IRQS 1, addlist IRQS p2v(0x08000004) 0xf000 16 0, \
+        addlist GPIOS p2v(0x08000000) 0xf000 16, \
+        addlist GPIOS p2v(0x08000002) 0xf000 16, \
+        addlist GPIOS p2v(0x08000006) 0xf000 16, \
+        addlist GPIOS p2v(0x08000008) 0xf000 16, \
+        set resumeaddr 0x30100000
+Trinity,    S3c2442 ,TRIN100,                     HTC_TRINITY
+Athena,     PXA27x  ,ATHE100,                     HTCATHENA, \
+	addlist IRQS p2v(0x08000008) 0xf000 16, \
+        addlist GPIOS p2v(0x09000000) 0xf000 16, \
+        addlist GPIOS p2v(0x08000000) 0xf000 16, \
+        addlist GPIOS p2v(0x08000002) 0xf000 16, \
+        addlist GPIOS p2v(0x08000004) 0xf000 16, \
+        addlist GPIOS p2v(0x08000006) 0xf000 16, \
+        addlist GPIOS p2v(0x0800000a) 0xf000 16, \
+        addlist GPIOS p2v(0x0800000c) 0xf000 16, \
+        addlist GPIOS p2v(0x0800000e) 0xf000 16, \
+        addlist GPIOS p2v(0x08000010) 0xf000 16
+G500,       S3c2440 ,G50V,                        G500,     set ramsize 64*1024*1024
+Artemis,    OMAP850 ,ARTE,                        ARTEMIS, \
+        addlist GPIOS p2v(0x04000000) 0xff00 16, \
+        addlist GPIOS p2v(0x04000002) 0xff00 16, \
+        addlist GPIOS p2v(0x04000004) 0xff00 16, \
+        addlist GPIOS p2v(0x04000006) 0xff00 16, \
+        addlist GPIOS p2v(0x04000008) 0xff00 16, \
+        addlist GPIOS p2v(0x0400000a) 0xff00 16, \
+        addlist GPIOS p2v(0x0400000c) 0xff00 16, \
+        addlist GPIOS p2v(0x0400000e) 0xff00 16, \
+        addlist GPIOS p2v(0x04000010) 0xff00 16
+Herald,     OMAP850 ,HERA,                        HERALD
+Prophet,    OMAP850 ,PM300
+RX3000,     S3c2440 ,HP iPAQ rx3,                 RX3715,   set ramsize 64*1024*1024
+Treo700wx,  PXA27x  ,Palm Treo 700w,              T700WX,   set ramsize 64*1024*1024
+Treo850w,   MSM7201A,Palm Treo 850w,              HTCPANTHER
+Treo850e,   MSM7201A,Palm Treo 850e,              HTCPANTHER_CDMA
+e310,       SA      ,Toshiba e310
+e740,       PXA     ,TOSHIBA e740
+Acer_n30,   S3c2410 ,Acer n30 Handheld,           N30
+Mio_P550,   S3c2440 ,Mio P550,                    MIO_P550
+Kaiser,     MSM7200 ,Kaiser
+Loox5xx,    PXA27x  ,FUJITSU SIEMENS COMPUTERS Pocket LOOX 5xx, LOOXN560
+Loox400,    PXA     ,FUJITSU SIEMENS COMPUTERS Pocket LOOX, LOOX410
+MioA701,    PXA27x  ,Mio Technology Limited,      MIOA701
+Wallaby,    SA      ,PW10A1,                      XDA
+Raphael,    MSM7201A,HTC Touch Pro T7272;RAPH100;RAPH800, HTCRAPHAEL, \
+        set ramsize 0x6400000, \
+        set ramaddr 0x20000000
+SGH_i900,   PXA27x  ,SGH-i900,                    SGH_I900
+Leo,        QSD8xxx ,HTC HD2 T8585;HTC_HD2;T-Mobile_LEO,       HTCLEO
+Topaz,      MSM7201A,"Touch Diamond2 T5353",      HTCTOPAZ, \
+        set ramsize 0x5100000, \
+        set ramaddr 0x10000000
+Rhodium,    MSM7201A,"HTC Touch Pro2 T7373";T7380,      HTCTOPAZ, \
+        set ramsize 0x5100000, \
+        set ramaddr 0x10000000
+Jornada9xx0,OMAP850 ,"HP, Jornada 900",           JORNADA928
+Acer_S200  ,QSD8xxx ,"Acer S200",                 ACER_S200
+M800,       S3c2442 ,M800V02,                     M800 
+X800,       S3c2442 ,X800,                        M800 
+DX900,      S3c6400 ,DX900V040,                   DX900
+X900,       S3c6400 ,V900V050,                    ACER_ETEN_X900
+M900,       S3c6410 ,M900V030;GT-I8000,                    ACER_TEMPO_M900
+HDMini,     MSM7227 ,"HTC HD mini T5555",         HDMINI
+
+PLATFORM=Jupiter
+Jornada820, SA      ,"HP, Jornada 820",           JORNADA820
+
+PLATFORM=Palm PC2
+H3100,      SA      ,Compaq iPAQ H3100,           H3100
+H3600a,     SA      ,Compaq iPAQ H3600,           H3600
+
+PLATFORM=SmartPhone
+Tornado,    OMAP850 ,Vodafone v1240,              OMAP_TORNADO
+Libra,      MSM7500 ,LIBR100
+
+PLATFORM=PLATFORM_TYPE
+E4430,      S3c2440 ,MDPNAE443X2TR01,             E4430, \
+        set ramsize 64*1024*1024
