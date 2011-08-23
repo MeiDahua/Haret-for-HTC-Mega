@@ -119,8 +119,8 @@ cpuFlushCache_arm6:
 @ The following part is the original codes.
 @ It seems to be not working.
         @ test
-        mov r0, #0
-        mov pc, r0
+        @ mov r0, #0
+        @ mov pc, r0
         @ end test
 
 
@@ -133,7 +133,7 @@ cpuFlushCache_arm6:
 
 @ The following part is from kernel wildfire arch/arm/boot/compressed/head.S
 @ It seems to be working. But kernel hangs at tags relocation.
-#if 0
+#if 1
 		mov	r0, #0
 		mcr	p15, 0, r0, c7, c14, 0	@ clean+invalidate D
 		mcr	p15, 0, r0, c7, c5, 0	@ invalidate I+BTB
@@ -186,7 +186,9 @@ asm_handler:
         .global mmu_trampoline, mmu_trampoline_end
 mmu_trampoline:
 	LDR	R6, =mmu_trampoline2
-    LDR	R7, =0xACCFF000
+    @ start addr of mmu_trampoline2
+    @LDR	R7, =0xACCFF000
+    LDR     R7, =0xc3ffc000
 	MOV	R8, R7
 	MOV 	R4, #(mmu_trampoline2_end - mmu_trampoline2)
 1:
@@ -194,7 +196,8 @@ mmu_trampoline:
 	STRB	R5, [R7], #1
 	SUBS	R4, R4, #1		
 	BNE	1b
-	LDR	R0, =0x0FFFF000	
+	@LDR	R0, =0x0FFFF000
+    LDR     R0, =0x0fff0000
 	MOV	PC, R8
 	.ltorg
 mmu_trampoline_end:
@@ -211,8 +214,6 @@ mmu_trampoline_end:
 mmu_trampoline2:
 	@ Store previous registers on stack.
         stmdb   sp, {r4-r14}
-
-
 
         @ Write back all cpu caches
         mov     r4, r0
@@ -243,11 +244,6 @@ tlabel6:
 #endif
 
 
-        @ test
-        @mov r0, #0
-        @mov pc, r0
-        @ end test
-
         @ Turn off mapping for this code
         mov     r1, r4, lsr #20
         mov     r0, r1, asl #20         @ r0 = funcaddr & 0xfff00000
@@ -256,6 +252,8 @@ tlabel6:
 @@@@@@@@@@@@@@@ The above 4 lines try to "turn off mapping" for this function @@@@@@
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                                         @ r5 == virtual address of MMU in non-cache ram
+
+
 #if 1
         str     r0, [r5, r1, asl #2]    @ mmu[funcaddr>>20] = r0
 #else
@@ -288,6 +286,7 @@ tlabel6:
        
 
 
+
         @ Force MMU update and invalidate I cache
         mov	r0, #0
         mcr	p15, 0, r0, c7, c10, 4	@ Drain write buffer
@@ -304,6 +303,9 @@ tlabel6:
 
 	NOP
 	NOP
+
+        @ meidh test
+        @mov     pc, #0
 
 	mov 	r0, #0
         mcr	p15, 0, r0, c1, c0, 0	@ disable the MMU & caches
@@ -368,6 +370,11 @@ mmu_trampoline:
 
         @ Jump to code with shared virtual/physical mapping
         add     pc, r4, #(1f - mmu_trampoline)
+        nop
+        nop
+        nop
+        nop
+
 
 1:      @ Code is running at a vm address that is the same as its
         @ physical address.  Now disable the MMU.
@@ -396,7 +403,7 @@ mmu_trampoline:
 		mov	r0, #0
 		mcr	p15, 0, r0, c7, c7	@ invalidate whole cache v4
 		mcr	p15, 0, r0, c8, c7	@ invalidate whole TLB v4
-        
+
         @ MMU is now disabled.  Call function.
         mov     pc, r6
 
