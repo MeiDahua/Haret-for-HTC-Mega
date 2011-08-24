@@ -286,7 +286,6 @@ tlabel6:
        
 
 
-
         @ Force MMU update and invalidate I cache
         mov	r0, #0
         mcr	p15, 0, r0, c7, c10, 4	@ Drain write buffer
@@ -307,16 +306,36 @@ tlabel6:
         @ meidh test
         @mov     pc, #0
 
-	mov 	r0, #0
-        mcr	p15, 0, r0, c1, c0, 0	@ disable the MMU & caches
+Loop1:
+        MOV R1, #0
+        MCR P15, 0, R1, C7, C14, 0    @ Clean (or Clean & Invalidate) Cache
+        MRS R2, CPSR
+        CPSID iaf                      @ Disable interrupts
+        MRC P15, 0, R1, C7, C10, 6    @ Read Cache Dirty Status Register
+        ANDS R1, R1, #01               @ Check if it is clean
+        BEQ UseClean
+        MSR CPSR, R2                   @ Re-enable interrupts
+        B Loop1                        @ - clean the cache again
+UseClean:
+        mrc p15, 0, r0, c1, c0, 0
+        and r0, r0, #0xFFFFFFFB
+
+        mcr	p15, 0, r0, c1, c0, 0	@ disable the MMU step 1 clear bit 2
         CPWAIT  r0
 
-        mov	r0, #0
-        mcr	p15, 0, r0, c13, c0, 0	@ clear PID
-        mcr	p15, 0, r0, c8, c7, 0	@ invalidate I+D TLB
-        mcr	p15, 0, r0, c7, c5, 0	@ Invalidate I cache & BTB
+        mrc p15, 0, r0, c1, c0, 0
+        and r0, r0, #0xFFFFFFFE
+
+        mcr	p15, 0, r0, c1, c0, 0	@ disable the MMU step 2 clear bit 0
         CPWAIT  r0
 
+        @mov	r0, #0
+        @mcr	p15, 0, r0, c13, c0, 0	@ clear PID
+        @mcr	p15, 0, r0, c8, c7, 0	@ invalidate I+D TLB
+        @mcr	p15, 0, r0, c7, c5, 0	@ Invalidate I cache & BTB
+        @CPWAIT  r0
+
+        CPSID iaf @ disable interrupts
         @ MMU is now disabled.  Call function.
         mov     pc, r6
 
