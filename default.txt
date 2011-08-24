@@ -1,4 +1,6 @@
-Set RAMSIZE 0x10000000
+set RAMSIZE 0x10000000
+set RAMADDR 0x10000000
 set MTYPE 3041
 set KERNEL zImage
+set cmdline "console=ttyS2,115200n8"
 boot
