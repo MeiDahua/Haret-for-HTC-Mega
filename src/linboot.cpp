@@ -337,7 +337,7 @@ preloader(struct preloadData *data)
         FB_PRINTF(&data->fbi, "Jumping to Kernel...\\n");
         typedef void (*lin_t)(uint32 zero, uint32 mach, char *tags);
         lin_t startfunc = (lin_t)destKernel;
-        startfunc(0, data->machtype, destTags);
+        startfunc(0, 855, destTags);
     }
 }
 
