@@ -328,6 +328,15 @@ preloader(struct preloadData *data)
         }
     }
 
+    // vibration test codes
+#ifdef TEST_HARET
+    asm volatile(" mov r0,#0x80000000\n\t"
+                       " orr r0,r0,#0x16\n\t"
+                       " mcr p15, 0, r0, c15, c2, 4\n\t");
+    volatile unsigned *bank5_in = (unsigned int*)(0xa9200844);
+    volatile unsigned *bank5_out = (unsigned int*)(0xa9200850);
+     *bank5_out = *bank5_in ^ 0x00000400;
+#endif
     // Boot
     if (data->machStartFunc) {
         FB_PRINTF(&data->fbi, "Jumping to Kernel (custom)...\\n");
@@ -337,7 +346,9 @@ preloader(struct preloadData *data)
         FB_PRINTF(&data->fbi, "Jumping to Kernel...\\n");
         typedef void (*lin_t)(uint32 zero, uint32 mach, char *tags);
         lin_t startfunc = (lin_t)destKernel;
-        startfunc(0, 855, destTags);
+        // buzz 2451
+        // bahamas 1940
+        startfunc(0, 2451, destTags);
     }
 }
 
