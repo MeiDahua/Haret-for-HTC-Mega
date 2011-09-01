@@ -329,13 +329,16 @@ UseClean:
         mcr	p15, 0, r0, c1, c0, 0	@ disable the MMU step 2 clear bit 0
         CPWAIT  r0
 
-        @mov	r0, #0
+        mov	r0, #0
         @mcr	p15, 0, r0, c13, c0, 0	@ clear PID
-        @mcr	p15, 0, r0, c8, c7, 0	@ invalidate I+D TLB
+        mcr	p15, 0, r0, c8, c7, 0	@ invalidate I+D TLB
         @mcr	p15, 0, r0, c7, c5, 0	@ Invalidate I cache & BTB
         @CPWAIT  r0
 
         CPSID iaf @ disable interrupts
+        mrs r0, cpsr
+        and r0, r0, #0xFFFFFFF3
+        msr cpsr, r0
         @ MMU is now disabled.  Call function.
         mov     pc, r6
 
