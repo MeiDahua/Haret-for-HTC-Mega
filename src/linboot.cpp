@@ -348,7 +348,8 @@ preloader(struct preloadData *data)
         lin_t startfunc = (lin_t)destKernel;
         // buzz 2451
         // bahamas 1940
-        startfunc(0, 2451, destTags);
+        // mega 3041
+        startfunc(0, 1940, destTags);
     }
 }
 
