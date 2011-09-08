@@ -349,7 +349,7 @@ preloader(struct preloadData *data)
         // buzz 2451
         // bahamas 1940
         // mega 3041
-        startfunc(0, 1940, destTags);
+        startfunc(0, 2451, destTags);
     }
 }
 
