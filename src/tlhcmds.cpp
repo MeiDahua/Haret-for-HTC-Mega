@@ -16,6 +16,8 @@
 #include "script.h" // REG_CMD
 #include "cpu.h" // MVAddr
 
+#define TH32CS_SNAPNOHEAPS 0x40000000
+
 LATE_LOAD(CreateToolhelp32Snapshot, "toolhelp")
 LATE_LOAD(CloseToolhelp32Snapshot, "toolhelp")
 LATE_LOAD(Process32First, "toolhelp")
@@ -49,7 +51,7 @@ cmd_kill(const char *cmd, const char *args)
     }
     Output("Looking to kill '%ls'", wname);
 
-    HANDLE hTH = late_CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    HANDLE hTH = late_CreateToolhelp32Snapshot(TH32CS_SNAPNOHEAPS | TH32CS_SNAPPROCESS, 0);
     if (hTH == INVALID_HANDLE_VALUE) {
         Output("Unable to create tool help snapshot");
         return;
@@ -81,7 +83,7 @@ REG_CMD(tlhAvail, "KILL", cmd_kill,
 static void
 psDump(const char *cmd, const char *args)
 {
-    HANDLE hTH = late_CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    HANDLE hTH = late_CreateToolhelp32Snapshot(TH32CS_SNAPNOHEAPS | TH32CS_SNAPPROCESS, 0);
     if (hTH == INVALID_HANDLE_VALUE) {
         Output("Unable to create tool help snapshot");
         return;
@@ -181,7 +183,7 @@ cmd_addr2module(const char *cmd, const char *args)
     }
     addr = MVAddr(addr);
 
-    HANDLE hTH = late_CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    HANDLE hTH = late_CreateToolhelp32Snapshot(TH32CS_SNAPNOHEAPS | TH32CS_SNAPPROCESS, 0);
     if (hTH == INVALID_HANDLE_VALUE) {
         Output("Unable to create tool help snapshot");
         return;
