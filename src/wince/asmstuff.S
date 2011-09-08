@@ -233,7 +233,7 @@ tlabel5:
 
 tlabel6:
                 MCR     p15, 0, R2,c7,c14, 2
-                SUBS    R2, R2, #0x4000000
+                SUBS    R2, R2, #0x4000000  @64Mb
                 BCS     tlabel6
                 SUBS    R1, R1, #0x20
                 BCS     tlabel5
