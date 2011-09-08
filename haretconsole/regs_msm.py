@@ -81,7 +81,7 @@ Regs_msm7xxxA.update({
         0xa9200854: ("out5_en", regOneBits("out5_en-")),
         0xa92008b8: ("intr5_en", regOneBits("intr5_en-")),
     })
-memalias.RegsList['ARCH:MSM7xxxA'] = Regs_msm7xxxA
+memalias.RegsList['ARCH:MSM722x'] = Regs_msm7xxxA
 
 
 ######################################################################
