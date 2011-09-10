@@ -14,8 +14,8 @@ VERSION=pre-0.5.3-$(shell date +"%Y%m%d_%H%M%S")
 OUT=out/
 
 # Default compiler flags (note -march=armv4 is needed for 16 bit insns)
-CXXFLAGS = -Wall -O -g -MD -march=armv5 -Iinclude -fno-exceptions -fno-rtti
-CXXFLAGS_ARMV5 = -Wall -O -g -MD -march=armv5 -Iinclude -fno-exceptions -fno-rtti
+CXXFLAGS = -Wall -O -g -MD -march=armv6 -Iinclude -fno-exceptions -fno-rtti
+CXXFLAGS_ARMV5 = -Wall -O -g -MD -march=armv6 -Iinclude -fno-exceptions -fno-rtti
 LDFLAGS = -Wl,--major-subsystem-version=5,--minor-subsystem-version=2 -static
 # LDFLAGS to debug invalid imports in exe
 #LDFLAGS = -Wl,-M -Wl,--cref
@@ -54,12 +54,12 @@ DLLTOOL = $(BASE)/bin/arm-cegcc-dlltool
 DLLTOOLFLAGS =
 
 define compile_armv4
-@echo "  Compiling (armv4) $1"
+@echo "  Compiling (armv6) $1"
 $(Q)$(CXX) $(CXXFLAGS) -c $1 -o $2
 endef
 
 define compile_armv5
-@echo "  Compiling (armv5) $1"
+@echo "  Compiling (armv6) $1"
 $(Q)$(CXX) $(CXXFLAGS_ARMV5) -c $1 -o $2
 endef
 
