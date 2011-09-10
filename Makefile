@@ -21,7 +21,7 @@ LDFLAGS = -Wl,--major-subsystem-version=5,--minor-subsystem-version=2 -static
 #LDFLAGS = -Wl,-M -Wl,--cref
 
 #LIBS = -L/media/ECB082C3B08293AC/cegcc-55/opt/cegcc/arm-cegcc/lib/w32api/  -lwinsock
-LIBS = -L/media/ECB082C3B08293AC/cegcc-55/opt/cegcc/arm-cegcc/lib/w32api
+LIBS = -L/home/micdav/cegcc55/opt/cegcc/arm-cegcc/lib/w32api/
 
 all: $(OUT) $(OUT)haret.exe $(OUT)haretconsole.tar.gz
 
@@ -40,7 +40,7 @@ vpath %.rc src/wince
 
 ################ cegcc settings
 
-BASE ?= /media/ECB082C3B08293AC/cegcc-55/opt/cegcc
+BASE ?= /home/micdav/cegcc55/opt/cegcc
 export BASE
 
 RC = $(BASE)/bin/arm-cegcc-windres
