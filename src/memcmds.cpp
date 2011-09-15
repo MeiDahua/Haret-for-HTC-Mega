@@ -4,6 +4,8 @@
 //
 //  For conditions of use see file COPYING
 
+#include <windows.h>
+#include <wchar.h>
 #include <ctype.h> // toupper
 #include <stdio.h> // FILE
 
@@ -296,25 +298,27 @@ REG_CMD(0, "SETBITP", cmd_setbit,
  * Dumping memory directly to file
  ****************************************************************/
 
-static bool memWrite (FILE *f, uint32 addr, uint32 size)
+static bool memWrite (HANDLE f, uint32 addr, uint32 size)
 {
+  DWORD nw;
   while (size)
   {
-    uint32 wc, sz = (size > 0x1000) ? 0x1000 : size;
+    uint32 sz = (size > 0x1000) ? 0x1000 : size;
     TRY_EXCEPTION_HANDLER
     {
-      wc = fwrite ((void *)addr, 1, sz, f);
+      //wc = fwrite ((void *)addr, 1, sz, f);
+      WriteFile(f, (void *)addr, sz, &nw, 0);
     }
     CATCH_EXCEPTION_HANDLER
     {
-      wc = 0;
+      nw = 0;
       Output(C_ERROR "Exception caught!");
     }
 
-    if (wc != sz)
+    if (nw != sz)
     {
       Output(C_ERROR "Short write detected while writing to file");
-      fclose (f);
+      CloseHandle (f);
       return false;
     }
     addr += sz;
@@ -324,7 +328,7 @@ static bool memWrite (FILE *f, uint32 addr, uint32 size)
 }
 
 // Write a portion of physical memory to file
-static bool memPhysWriteFile (FILE *f, uint32 addr, uint32 size)
+static bool memPhysWriteFile (HANDLE f, uint32 addr, uint32 size)
 {
   while (size)
   {
@@ -343,7 +347,7 @@ static void
 cmd_memtofile(const char *tok, const char *args)
 {
     bool virt = toupper (tok [0]) == 'V';
-    char rawfn[MAX_CMDLEN], fn[MAX_CMDLEN];
+    char rawfn[MAX_CMDLEN];
     if (get_token(&args, rawfn, sizeof(rawfn))) {
         ScriptError("file name expected");
         return;
@@ -355,10 +359,16 @@ cmd_memtofile(const char *tok, const char *args)
         return;
     }
 
-    fnprepare(rawfn, fn, sizeof(fn));
-    FILE *f = fopen(fn, "wb");
+    //FILE *f = fopen(fn, "wb");
+    wchar_t tmpwfn[MAX_CMDLEN];
+    mbstowcs(tmpwfn, rawfn, ARRAY_SIZE(tmpwfn));
+    wchar_t wfn[200];
+    fnprepare(tmpwfn, wfn, sizeof(wfn));
+    
+    HANDLE f = CreateFile(wfn, GENERIC_WRITE, FILE_SHARE_READ,
+			       0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL /*| FILE_FLAG_WRITE_THROUGH*/, 0);
     if (!f) {
-        Output(C_ERROR "Cannot write file %s", fn);
+        Output(C_ERROR "Cannot write file %s", rawfn);
         return;
     }
 
@@ -367,7 +377,7 @@ cmd_memtofile(const char *tok, const char *args)
     else
         memPhysWriteFile(f, addr, size);
 
-    fclose(f);
+    CloseHandle(f);
 }
 REG_CMD_ALT(0, "PWF", cmd_memtofile, pwf, 0)
 REG_CMD(0, "VWF", cmd_memtofile,
